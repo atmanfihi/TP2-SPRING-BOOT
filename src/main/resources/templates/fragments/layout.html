@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="fr">
+<head th:fragment="head(titre)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titre} + ' | PharmaSecure'">PharmaSecure</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:fragment="nav" class="nav">
+    <a class="brand" th:href="@{/home}">PharmaSecure</a>
+    <div class="liens">
+        <a th:href="@{/home}">Accueil</a>
+        <a sec:authorize="hasAnyRole('ADMIN','PHARMACIEN','CLIENT')" th:href="@{/medicaments}">Médicaments</a>
+        <a sec:authorize="hasAnyRole('ADMIN','PHARMACIEN','CAISSIER')" th:href="@{/ventes}">Ventes</a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}">Administration</a>
+    </div>
+    <div class="session" sec:authorize="isAuthenticated()">
+        <span class="utilisateur" sec:authentication="name">user</span>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="secondaire">Déconnexion</button>
+        </form>
+    </div>
+</nav>
+
+<div th:fragment="messages">
+    <div class="alerte succes" th:if="${succes}" th:text="${succes}">Succès</div>
+    <div class="alerte erreur" th:if="${erreur}" th:text="${erreur}">Erreur</div>
+</div>
+</body>
+</html>

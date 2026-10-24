@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="fr">
+<head th:replace="~{fragments/layout :: head('Accueil')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="contenu">
+    <h1>Bienvenue, <span th:text="${username}">user</span></h1>
+    <p class="sous-titre">
+        Rôle(s) :
+        <span class="badge" th:each="r : ${roles}" th:text="${r}">ROLE</span>
+    </p>
+
+    <div class="grille">
+        <a class="carte lien" sec:authorize="hasAnyRole('ADMIN','PHARMACIEN','CLIENT')" th:href="@{/medicaments}">
+            <h2>Médicaments</h2>
+            <p sec:authorize="hasRole('ADMIN')">Ajouter, modifier, supprimer les médicaments et gérer les stocks.</p>
+            <p sec:authorize="hasRole('PHARMACIEN')">Consulter le catalogue et mettre à jour les stocks.</p>
+            <p sec:authorize="hasRole('CLIENT')">Consulter les médicaments disponibles.</p>
+        </a>
+        <a class="carte lien" sec:authorize="hasAnyRole('ADMIN','PHARMACIEN','CAISSIER')" th:href="@{/ventes}">
+            <h2>Ventes</h2>
+            <p>Enregistrer une vente et consulter l'historique.</p>
+        </a>
+        <a class="carte lien" sec:authorize="hasRole('ADMIN')" th:href="@{/admin}">
+            <h2>Administration</h2>
+            <p>Gérer les comptes utilisateurs et leurs rôles.</p>
+        </a>
+    </div>
+</main>
+</body>
+</html>

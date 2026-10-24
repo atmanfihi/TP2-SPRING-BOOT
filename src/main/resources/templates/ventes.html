@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head th:replace="~{fragments/layout :: head('Ventes')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="contenu">
+    <h1>Ventes</h1>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <section class="carte">
+        <h2>Nouvelle vente</h2>
+        <p class="vide" th:if="${#lists.isEmpty(medicaments)}">Aucun médicament en stock.</p>
+        <form th:unless="${#lists.isEmpty(medicaments)}" th:action="@{/ventes}" method="post" class="formulaire-ligne">
+            <div>
+                <label for="medicamentId">Médicament</label>
+                <select id="medicamentId" name="medicamentId" required>
+                    <option value="" disabled selected>Choisir…</option>
+                    <option th:each="m : ${medicaments}" th:value="${m.id}"
+                            th:text="${m.nom} + ' — ' + ${#numbers.formatDecimal(m.prix, 1, 'WHITESPACE', 2, 'COMMA')} + ' DH (stock : ' + ${m.quantiteStock} + ')'">
+                        Médicament
+                    </option>
+                </select>
+            </div>
+            <div>
+                <label for="quantite">Quantité</label>
+                <input type="number" id="quantite" name="quantite" min="1" value="1" required>
+            </div>
+            <button type="submit">Enregistrer la vente</button>
+        </form>
+    </section>
+
+    <section>
+        <h2 th:text="${toutesLesVentes} ? 'Historique des ventes (tous vendeurs)' : 'Mes dernières ventes'">Historique</h2>
+        <p class="vide" th:if="${#lists.isEmpty(ventes)}">Aucune vente enregistrée.</p>
+        <table th:unless="${#lists.isEmpty(ventes)}">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Médicament</th>
+                <th class="num">Quantité</th>
+                <th class="num">Prix unitaire</th>
+                <th class="num">Montant (DH)</th>
+                <th>Vendeur</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="v : ${ventes}">
+                <td th:text="${#temporals.format(v.dateVente, 'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+                <td th:text="${v.medicament.nom}">Médicament</td>
+                <td class="num" th:text="${v.quantite}">1</td>
+                <td class="num" th:text="${#numbers.formatDecimal(v.prixUnitaire, 1, 'WHITESPACE', 2, 'COMMA')}">0,00</td>
+                <td class="num" th:text="${#numbers.formatDecimal(v.montantTotal, 1, 'WHITESPACE', 2, 'COMMA')}">0,00</td>
+                <td th:text="${v.vendeur}">vendeur</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="4"><strong>Total</strong></td>
+                <td class="num"><strong th:text="${#numbers.formatDecimal(total, 1, 'WHITESPACE', 2, 'COMMA')}">0,00</strong></td>
+                <td></td>
+            </tr>
+            </tfoot>
+        </table>
+    </section>
+</main>
+</body>
+</html>

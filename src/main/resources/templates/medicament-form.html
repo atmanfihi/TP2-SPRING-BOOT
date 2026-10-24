@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head th:replace="~{fragments/layout :: head(${medicament.id == null ? 'Nouveau médicament' : 'Modifier le médicament'})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="contenu etroit">
+    <a class="retour" th:href="@{/medicaments}">← Retour aux médicaments</a>
+    <h1 th:text="${medicament.id == null} ? 'Nouveau médicament' : 'Modifier le médicament'">Médicament</h1>
+
+    <form th:action="@{/medicaments/save}" th:object="${medicament}" method="post" class="formulaire carte">
+        <input type="hidden" th:field="*{id}">
+
+        <label for="nom">Nom</label>
+        <input type="text" th:field="*{nom}" id="nom" required maxlength="100">
+        <span class="champ-erreur" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}">Erreur</span>
+
+        <label for="description">Description</label>
+        <textarea th:field="*{description}" id="description" rows="3" maxlength="500"></textarea>
+        <span class="champ-erreur" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Erreur</span>
+
+        <label for="prix">Prix (DH)</label>
+        <input type="number" th:field="*{prix}" id="prix" step="0.01" min="0.01" required>
+        <span class="champ-erreur" th:if="${#fields.hasErrors('prix')}" th:errors="*{prix}">Erreur</span>
+
+        <label for="quantiteStock">Quantité en stock</label>
+        <input type="number" th:field="*{quantiteStock}" id="quantiteStock" min="0" required>
+        <span class="champ-erreur" th:if="${#fields.hasErrors('quantiteStock')}" th:errors="*{quantiteStock}">Erreur</span>
+
+        <button type="submit">Enregistrer</button>
+    </form>
+</main>
+</body>
+</html>

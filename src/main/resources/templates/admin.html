@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="fr">
+<head th:replace="~{fragments/layout :: head('Administration')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="contenu">
+    <h1>Administration des utilisateurs</h1>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <section class="carte">
+        <h2>Créer un utilisateur</h2>
+        <form th:action="@{/admin/users}" method="post" class="formulaire-ligne">
+            <div>
+                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" minlength="3" maxlength="50" required>
+            </div>
+            <div>
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" minlength="6" required autocomplete="new-password">
+            </div>
+            <div>
+                <label for="role">Rôle</label>
+                <select id="role" name="role" required>
+                    <option th:each="r : ${roles}" th:value="${r.name}" th:text="${r.name}">ROLE</option>
+                </select>
+            </div>
+            <button type="submit">Créer</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Utilisateurs</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Utilisateur</th>
+                <th>Rôle</th>
+                <th>Statut</th>
+                <th>Changer le rôle</th>
+                <th>Nouveau mot de passe</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${users}">
+                <td>
+                    <strong th:text="${u.username}">user</strong>
+                    <span class="badge" th:if="${u.username == #authentication.name}">vous</span>
+                </td>
+                <td th:text="${u.rolesAffichage}">ROLE</td>
+                <td>
+                    <span class="badge" th:if="${u.enabled}">Actif</span>
+                    <span class="badge erreur" th:unless="${u.enabled}">Désactivé</span>
+                </td>
+                <td>
+                    <form class="en-ligne" th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post">
+                        <select name="role">
+                            <option th:each="r : ${roles}" th:value="${r.name}" th:text="${r.name}"
+                                    th:selected="${u.rolesAffichage == r.name}">ROLE</option>
+                        </select>
+                        <button type="submit" class="petit secondaire">OK</button>
+                    </form>
+                </td>
+                <td>
+                    <form class="en-ligne" th:action="@{/admin/users/{id}/password(id=${u.id})}" method="post">
+                        <input type="password" name="password" minlength="6" required placeholder="6 caractères min." autocomplete="new-password">
+                        <button type="submit" class="petit secondaire">OK</button>
+                    </form>
+                </td>
+                <td class="actions" th:if="${u.username != #authentication.name}">
+                    <form class="en-ligne" th:action="@{/admin/users/{id}/toggle(id=${u.id})}" method="post">
+                        <button type="submit" class="petit secondaire" th:text="${u.enabled} ? 'Désactiver' : 'Activer'">Désactiver</button>
+                    </form>
+                    <form class="en-ligne" th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post"
+                          onsubmit="return confirm('Supprimer cet utilisateur ?');">
+                        <button type="submit" class="petit danger">Supprimer</button>
+                    </form>
+                </td>
+                <td th:unless="${u.username != #authentication.name}">—</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

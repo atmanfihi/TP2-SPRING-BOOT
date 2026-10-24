@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head th:replace="~{fragments/layout :: head('Connexion')}"></head>
+<body class="page-login">
+<main class="login">
+    <h1>PharmaSecure</h1>
+    <p class="sous-titre">Gestion sécurisée de pharmacie</p>
+
+    <div class="alerte erreur" th:if="${param.error}">Identifiant ou mot de passe incorrect, ou compte désactivé.</div>
+    <div class="alerte succes" th:if="${param.logout}">Vous avez été déconnecté.</div>
+
+    <form th:action="@{/login}" method="post" class="formulaire">
+        <label for="username">Nom d'utilisateur</label>
+        <input type="text" id="username" name="username" required autofocus autocomplete="username">
+
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+
+        <button type="submit">Se connecter</button>
+    </form>
+
+    <table class="comptes">
+        <thead>
+        <tr><th>Utilisateur</th><th>Mot de passe</th><th>Rôle</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>admin</td><td>admin123</td><td>ADMIN</td></tr>
+        <tr><td>pharma</td><td>pharma123</td><td>PHARMACIEN</td></tr>
+        <tr><td>caisse</td><td>caisse123</td><td>CAISSIER</td></tr>
+        <tr><td>client</td><td>client123</td><td>CLIENT</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="fr">
+<head th:replace="~{fragments/layout :: head('Médicaments')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="contenu">
+    <div class="entete">
+        <h1>Médicaments</h1>
+        <a sec:authorize="hasRole('ADMIN')" class="bouton" th:href="@{/medicaments/new}">+ Nouveau médicament</a>
+    </div>
+    <p class="sous-titre" sec:authorize="hasRole('CLIENT')">Consultation en lecture seule.</p>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <p class="vide" th:if="${#lists.isEmpty(medicaments)}">Aucun médicament enregistré.</p>
+
+    <table th:unless="${#lists.isEmpty(medicaments)}">
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Description</th>
+            <th class="num">Prix (DH)</th>
+            <th class="num">Stock</th>
+            <th sec:authorize="hasAnyRole('ADMIN','PHARMACIEN')">Mise à jour du stock</th>
+            <th sec:authorize="hasRole('ADMIN')">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="m : ${medicaments}">
+            <td th:text="${m.nom}">Nom</td>
+            <td th:text="${m.description}">Description</td>
+            <td class="num" th:text="${#numbers.formatDecimal(m.prix, 1, 'WHITESPACE', 2, 'COMMA')}">0,00</td>
+            <td class="num">
+                <span th:text="${m.quantiteStock}">0</span>
+                <span class="badge erreur" th:if="${!m.disponible}">Rupture</span>
+                <span class="badge alerte-stock" th:if="${m.disponible and m.stockFaible}">Stock faible</span>
+            </td>
+            <td sec:authorize="hasAnyRole('ADMIN','PHARMACIEN')">
+                <form class="en-ligne" th:action="@{/medicaments/{id}/stock(id=${m.id})}" method="post">
+                    <input type="number" name="quantite" min="0" th:value="${m.quantiteStock}" required>
+                    <button type="submit" class="petit">Mettre à jour</button>
+                </form>
+            </td>
+            <td sec:authorize="hasRole('ADMIN')" class="actions">
+                <a class="petit bouton secondaire" th:href="@{/medicaments/{id}/edit(id=${m.id})}">Modifier</a>
+                <form class="en-ligne" th:action="@{/medicaments/{id}/delete(id=${m.id})}" method="post"
+                      onsubmit="return confirm('Supprimer ce médicament ?');">
+                    <button type="submit" class="petit danger">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>
